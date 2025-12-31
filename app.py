@@ -5,49 +5,40 @@ import google.generativeai as genai
 API_KEY = "AIzaSyC8NoVlSnKMlaafqh9deN133eWgTE270c4"
 genai.configure(api_key=API_KEY)
 
-# إعدادات واجهة المستخدم لتشبه تصميمك
+# إعدادات الواجهة
 st.set_page_config(page_title="StoryToImage AI", page_icon="🎨")
+st.title("🎨 تحويل القصص إلى صور")
 
-# العنوان
-st.title("🎨 StoryToImage AI")
+# مدخلات المستخدم
+story_text = st.text_area("نص القصة", placeholder="اكتب قصتك هنا بالتفصيل...", height=200)
 
-# خانة نص القصة
-story_text = st.text_area(
-    "نص القصة", 
-    placeholder="اكتب قصتك هنا بالتفصيل (كلما زادت التفاصيل زادت الجودة)...",
-    height=200
-)
-
-# خيارات القياس والنمط في أعمدة
 col1, col2 = st.columns(2)
-
 with col1:
-    size = st.selectbox("قياس الصورة", ["يوتيوب 16:9", "شورتس 9:16"])
-
+    size = st.selectbox("قياس الصورة", ["16:9", "9:16"])
 with col2:
-    style = st.selectbox("نمط الصور", ["كلاسيكي", "تاريخي", "أنمي", "كرتوني", "واقعي"])
+    style = st.selectbox("نمط الرسم", ["تاريخي", "أنمي", "واقعي", "كرتوني"])
 
 # زر التشغيل
-if st.button("توليد الوصف والمشهد"):
+if st.button("إنشاء المشهد"):
     if story_text:
-        with st.spinner("جاري تحليل القصة وتوليد الوصف..."):
+        with st.spinner("جاري التحليل والتوليد..."):
             try:
-                # استدعاء موديل Gemini
+                # الكود المصحح للموديل
                 model = genai.GenerativeModel('gemini-1.5-flash')
-                prompt = f"حلل القصة التالية: {story_text}. ثم اقترح وصفاً دقيقاً لصورة تناسب هذه القصة بنمط {style} وقياس {size}."
+                prompt = f"Describe a professional artistic scene for this story in English as a single prompt for image generation, style {style}: {story_text}"
                 
                 response = model.generate_content(prompt)
+                desc = response.text
                 
-                # عرض النتيجة
-                st.success("تم التوليد بنجاح!")
-                st.subheader("الوصف المقترح للمشهد:")
-                st.write(response.text)
+                st.subheader("الوصف الذكي:")
+                st.info(desc)
+                
+                # توليد الصورة الحقيقية وعرضها
+                st.subheader("المشهد البصري:")
+                image_url = f"https://pollinations.ai/p/{desc.replace(' ', '_')}?width=1024&height=1024&nologo=true"
+                st.image(image_url, caption="الصورة المولدة لقصتك")
                 
             except Exception as e:
-                st.error(f"حدث خطأ: {e}")
+                st.error(f"خطأ في الاتصال: {e}")
     else:
-        st.warning("الرجاء كتابة نص القصة أولاً.")
-
-# تذييل الصفحة
-st.markdown("---")
-st.caption("Powered by Gemini AI | Developed via Google AI Studio")
+        st.warning("الرجاء كتابة نص أولاً")
