@@ -1,27 +1,27 @@
 import streamlit as st
-import requests
+import urllib.parse
 
-# إعدادات الواجهة
-st.set_page_config(page_title="AI Story Visualizer", layout="centered")
-st.title("🎨 محول القصص إلى صور (نسخة الإنقاذ)")
+# إعدادات الصفحة
+st.set_page_config(page_title="AI Story Image", layout="centered")
+st.title("🎨 محول القصص إلى صور")
 
-# واجهة بسيطة
-story = st.text_area("اكتب قصتك هنا:", placeholder="مثلاً: رجل يمشي في الغابة تحت المطر...", height=150)
-style = st.selectbox("اختر النمط:", ["واقعي", "أنمي", "رسم زيتي", "سينمائي"])
+# المدخلات
+story = st.text_area("اكتب قصتك هنا:", placeholder="مثلاً: قطة صغيرة تلعب في الحديقة...", height=150)
+style = st.selectbox("اختر النمط:", ["Anime", "Cyberpunk", "Oil Painting", "Cinematic", "Cartoon"])
 
-if st.button("توليد المشهد الآن"):
+if st.button("توليد الصورة الآن 🎉"):
     if story:
-        with st.spinner("جاري إنشاء صورتك..."):
+        with st.spinner("جاري إنشاء لوحتك الفنية..."):
             try:
-                # نستخدم محرك توليد صور مباشر ومجاني
-                # نقوم بتحويل النص إلى إنجليزية بسيطة برمجياً (أو يمكنك الكتابة بالإنجليزية)
-                prompt = f"{story}, {style} style, high quality, 4k"
-                image_url = f"https://pollinations.ai/p/{prompt.replace(' ', '_')}?width=1024&height=1024&nologo=true"
+                # هذه الخطوة هي السر: تحويل النص لرابط يفهمه المتصفح
+                clean_text = urllib.parse.quote(story)
+                image_url = f"https://pollinations.ai/p/{clean_text}?width=1024&height=1024&seed=123&model=flux&nologo=true"
                 
-                # عرض النتيجة
-                st.image(image_url, caption="تم التوليد بنجاح! 🎉")
-                st.success("هذا المحرك يعمل بدون مفتاح API لتجنب المشاكل السابقة.")
+                # عرض الصورة
+                st.markdown(f"### النتيجة لنمط {style}:")
+                st.image(image_url, use_container_width=True)
+                st.success("تم التوليد بنجاح! إذا لم تظهر الصورة، انتظر ثواني فقط.")
             except Exception as e:
-                st.error("حدثت مشكلة في الاتصال بالخادم، جرب مرة أخرى.")
+                st.error("حدث ضغط على الخادم، حاول مرة أخرى بعد قليل.")
     else:
-        st.warning("الرجاء كتابة وصف للقصة أولاً.")
+        st.warning("من فضلك اكتب قصة أولاً!")
