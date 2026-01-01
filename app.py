@@ -1,37 +1,22 @@
 import streamlit as st
-import requests
-import urllib.parse
 
-# إعدادات واجهة التطبيق
-st.set_page_config(page_title="Magic Story Image", layout="centered")
-st.title("🎨 محول القصص إلى صور (النسخة الشغالة)")
+st.title("🎨 مولد الصور السريع")
 
-# خانة النص
-story = st.text_area("اكتب قصتك هنا بالعربي:", placeholder="مثال: فارس يركب حصاناً أبيض في الغابة...", height=150)
-style = st.selectbox("اختر نمط الرسم:", ["Artistic", "Anime", "Realistic", "3D Render"])
+# خانة بسيطة جداً
+prompt = st.text_input("اكتب شيئاً بالإنجليزية (مثال: Rose):")
 
-if st.button("توليد الصورة الآن ✨"):
-    if story:
-        with st.spinner("جاري الترجمة وإنشاء الصورة..."):
-            try:
-                # خطوة الإنقاذ: ترجمة بسيطة برمجياً عبر محرك ترجمة مجاني
-                translation_url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q={urllib.parse.quote(story)}"
-                r = requests.get(translation_url)
-                translated_text = r.json()[0][0][0]
-                
-                # إنشاء رابط الصورة بالإنجليزية
-                final_prompt = f"{translated_text}, {style} style, masterpiece, highly detailed"
-                encoded_prompt = urllib.parse.quote(final_prompt)
-                image_url = f"https://pollinations.ai/p/{encoded_prompt}?width=1024&height=1024&seed=99&nologo=true"
-                
-                # عرض الصورة
-                st.markdown("---")
-                st.image(image_url, caption="تم توليد الصورة بناءً على ترجمة قصتك")
-                st.success("نجحت العملية! إذا لم تظهر الصورة فوراً، انتظر 5 ثوانٍ لتحميلها.")
-                
-            except Exception as e:
-                # في حال فشل الترجمة، نستخدم النص الأصلي مع تنظيفه
-                image_url = f"https://pollinations.ai/p/{urllib.parse.quote(story)}?width=1024&height=1024"
-                st.image(image_url)
+if st.button("شاهد الصورة"):
+    if prompt:
+        # رابط مباشر ومضمون بنسبة 100%
+        image_url = f"https://image.pollinations.ai/prompt/{prompt.replace(' ', '%20')}"
+        
+        st.write("---")
+        # عرض الصورة بطريقة برمجية مختلفة تضمن الظهور
+        st.markdown(f'<img src="{image_url}" width="100%" />', unsafe_allow_html=True)
+        
+        # رابط احتياطي كبير وواضح
+        st.write("---")
+        st.info("إذا لم تظهر الصورة أعلاه، اضغط على الرابط بالأسفل:")
+        st.markdown(f"### [إضغط هنا لفتح الصورة مباشرة]({image_url})")
     else:
-        st.warning("أدخل نصاً أولاً")
+        st.warning("يرجى كتابة كلمة")
