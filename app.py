@@ -18,7 +18,7 @@ if st.button("توليد الوصف والمشهد"):
         with st.spinner("جاري المعالجة..."):
             try:
                 # هذا هو التعديل الذي يحل مشكلة 404
-                model = genai.GenerativeModel('models/gemini-1.5-flash')
+                model = genai.GenerativeModel('gemini-pro')
                 
                 prompt = f"Describe a professional artistic scene for this story in English for AI image generation, style {style}: {story}"
                 response = model.generate_content(prompt)
